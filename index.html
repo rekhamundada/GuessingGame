@@ -31,12 +31,9 @@
           <li class='guess'>-</li>
           <li class='guess'>-</li>
           <li class='guess'>-</li>
-          <li class='guess'>-</li>
-               
+          <li class='guess'>-</li>               
         </ul>
-      </div>
-    
-
+      </div>    
       <div id="menu-btns">         
         <!-- reset and hint buttons -->
         <button id='reset' class ='btn btn-warning'>Reset</button>
@@ -44,9 +41,6 @@
       </div>
     </div>
   </div>
-
-
-
   <div id='footer' class='center'>    
       <!-- <center class = 'center'>  -->
     <div class='row'>
@@ -63,7 +57,83 @@
       </div>
     </div>
   </div>
+</head>
+<!-- <script src="/Users/rekhamundada/Downloads/jquery-3.2.1.min.js"></script> -->
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/GuessingGame.js"></script>
+<script>
+$(document).ready(function(){
+  var game = new Game();
+   $('#submit').click(function(){
+    console.log('submit button clicked');
+    makeAGuess(game);
 
+   $('#reset').click(function(){
+    game = new Game();
+    $('#title').text("Play the Guessing Game!");
+    $('#subtitle').text("Guess a number between 1-100");
+    $('.guess').text('-');
+    $('#hint','#submit').prop("disabled",false);
+    });
+
+    $('#hint').click(function(){
+      var hints = game.provideHint();
+      $('#title').text("The winning number is " + hints[0]+ ', '+ hints[1] + ' or ' + hints[2]);
+    })
+  });
+   $('#players-input').keypress(function(event) {
+        if ( event.which == 13 ) {
+           makeAGuess(game);
+        }
+    });
+});
+function makeAGuess(game) {
+    var guess = $('#players-input').val();
+    $('#players-input').val("");
+    var output = game.playersGuessSubmission(parseInt(guess,10));
+    //console.log(output);
+    alert(output);
+}
+Game.prototype.checkGuess = function () {
+    if (this.playersGuess === this.winningNumber) {
+      $('#hint','#submit').prop("disabled",true);
+      $('#subtitle').text("Press the Reset button to play again!")
+        return "You Win!";
+    } else {
+        if (this.pastGuesses.indexOf(this.playersGuess) > -1) {          
+            return "You have already guessed that number.";
+        } else {
+            this.pastGuesses.push(this.playersGuess)
+            $('#guess-list li:nth-child('+this.pastGuesses.length +')').text(this.playersGuess)
+            if (this.pastGuesses.length === 5) {
+              $('#hint','#submit').prop("disabled",true);
+              $('#subtitle').text("Press the Reset button to play again!")
+                return "You Lose.";
+            } else {
+              if(this.isLower()){
+                $('#subtitle').text('Guess Higher')
+              } else{                
+                $('#subtitle').text('Guess Lower')
+              }
+                //alert(this.difference());
+              if (this.difference() < 10) {
+                    return "You\'re burning up!"
+              }
+              if (this.difference() < 25) {
+                    return "You\'re lukewarm.";
+              }
+              if (this.difference() < 50) {
+                    return "You\'re a bit chilly."
+              }
+              if (this.difference() < 100) {
+                    return "You\'re ice cold!";
+              }
+            }
+        }
+    }
+}
+
+</script>
 </body>
 
 </html>
